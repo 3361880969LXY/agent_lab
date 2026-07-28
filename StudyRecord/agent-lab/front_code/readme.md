@@ -6,3 +6,7 @@
 
 
 ##  < script > 块，里面是 JavaScript  
+
+
+配置 文件在哪？
+/home/ubuntu/agent_lab/StudyRecord/agent-lab/front_code
