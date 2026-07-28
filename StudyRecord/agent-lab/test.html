@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人简历 - Resume</title>
+<style>
+  /* ===== Reset & Base ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0e14;
+    --surface: #131820;
+    --border: #1e2a3a;
+    --text: #c8d6e5;
+    --muted: #5c6e82;
+    --accent: #39ffe8;
+    --accent2: #7c5cfc;
+    --glow: rgba(57, 255, 232, 0.12);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== Animated BG Grid ===== */
+  .bg-grid {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(rgba(57,255,232,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(57,255,232,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 0%, black 30%, transparent 70%);
+  }
+
+  /* ===== Container ===== */
+  .container {
+    position: relative; z-index: 1;
+    max-width: 820px; margin: 0 auto; padding: 60px 24px 80px;
+  }
+
+  /* ===== Header ===== */
+  .header {
+    text-align: center; padding: 40px 0 50px;
+    position: relative;
+  }
+  .header::after {
+    content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 60px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+
+  .name {
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    font-weight: 700; letter-spacing: 0.04em;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .title {
+    margin-top: 8px; font-size: 1rem; color: var(--muted);
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+
+  .contact-row {
+    margin-top: 18px;
+    display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;
+    font-size: 0.88rem; color: var(--muted);
+  }
+  .contact-row span { display: flex; align-items: center; gap: 5px; }
+
+  /* ===== Section ===== */
+  .section {
+    margin-top: 48px;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .section.visible { opacity: 1; transform: translateY(0); }
+
+  .section-title {
+    font-size: 0.82rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title::before {
+    content: '▸'; font-size: 0.7rem; color: var(--accent);
+  }
+
+  /* ===== Skill Tags ===== */
+  .skill-tags {
+    display: flex; flex-wrap: wrap; gap: 10px;
+  }
+  .skill-tag {
+    padding: 6px 16px; border-radius: 99px;
+    font-size: 0.82rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    transition: all 0.25s;
+    cursor: default;
+  }
+  .skill-tag:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 14px var(--glow);
+    transform: translateY(-1px);
+  }
+
+  /* ===== Timeline (Experience / Education) ===== */
+  .timeline { position: relative; padding-left: 24px; }
+
+  .timeline::before {
+    content: ''; position: absolute; left: 0; top: 4px; bottom: 4px;
+    width: 1px; background: var(--border);
+  }
+
+  .timeline-item {
+    position: relative; margin-bottom: 28px;
+  }
+  .timeline-item:last-child { margin-bottom: 0; }
+
+  .timeline-item::before {
+    content: ''; position: absolute;
+    left: -28px; top: 6px;
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .timeline-date {
+    font-size: 0.78rem; color: var(--muted); letter-spacing: 0.06em;
+  }
+
+  .timeline-role {
+    font-size: 1.05rem; font-weight: 600; margin-top: 2px;
+  }
+
+  .timeline-org {
+    font-size: 0.88rem; color: var(--accent); margin-bottom: 6px;
+  }
+
+  .timeline-desc {
+    font-size: 0.88rem; color: var(--muted); max-width: 560px;
+  }
+
+  /* ===== About Text ===== */
+  .about-text {
+    font-size: 0.95rem; color: var(--muted); max-width: 600px;
+  }
+
+  /* ===== Particle Canvas ===== */
+  #particles {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  }
+
+  /* ===== Footer ===== */
+  .footer {
+    margin-top: 60px; text-align: center;
+    font-size: 0.75rem; color: var(--muted); letter-spacing: 0.06em;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 600px) {
+    .container { padding: 40px 16px 60px; }
+    .contact-row { gap: 12px; font-size: 0.8rem; }
+    .section { margin-top: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<canvas id="particles"></canvas>
+
+<div class="container">
+
+  <!-- ===== Header ===== -->
+  <header class="header">
+    <h1 class="name">张三</h1>
+    <p class="title">全栈开发工程师 · Full-Stack Developer</p>
+    <div class="contact-row">
+      <span>📧 zhangsan@example.com</span>
+      <span>📱 138-0000-0000</span>
+      <span>📍 中国·北京</span>
+    </div>
+  </header>
+
+  <!-- ===== About ===== -->
+  <section class="section">
+    <h2 class="section-title">关于我</h2>
+    <p class="about-text">
+      5 年全栈开发经验，专注构建高性能 Web 应用。热爱开源，追求优雅的代码与极致的用户体验。
+      擅长 React / Vue 生态与 Node.js 后端架构，对云原生与 DevOps 有深入实践。
+    </p>
+  </section>
+
+  <!-- ===== Skills ===== -->
+  <section class="section">
+    <h2 class="section-title">技术栈</h2>
+    <div class="skill-tags" id="skillTags">
+      <!-- JS 动态注入 -->
+    </div>
+  </section>
+
+  <!-- ===== Experience ===== -->
+  <section class="section">
+    <h2 class="section-title">工作经历</h2>
+    <div class="timeline" id="experience">
+      <!-- JS 动态注入 -->
+    </div>
+  </section>
+
+  <!-- ===== Education ===== -->
+  <section class="section">
+    <h2 class="section-title">教育背景</h2>
+    <div class="timeline" id="education">
+      <!-- JS 动态注入 -->
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    &copy; 2026 张三 · Powered by Code &amp; Creativity
+  </footer>
+</div>
+
+<script>
+/* ============================================
+   Data Layer — 修改这里即可更新简历内容
+   ============================================ */
+const resume = {
+  skills: [
+    'JavaScript', 'TypeScript', 'React', 'Vue 3', 'Node.js',
+    'Python', 'PostgreSQL', 'MongoDB', 'Docker', 'Kubernetes',
+    'AWS', 'GraphQL', 'Redis', 'Git', 'CI/CD'
+  ],
+  experience: [
+    {
+      date: '2023.03 — 至今',
+      role: '高级前端工程师',
+      org: '某科技有限公司',
+      desc: '主导 B 端 SaaS 平台前端架构重构，将首屏加载速度提升 60%，推动组件库建设与工程化规范落地。'
+    },
+    {
+      date: '2021.07 — 2023.02',
+      role: '全栈开发工程师',
+      org: '某互联网公司',
+      desc: '负责核心业务模块的全栈开发，设计并实现 RESTful API 与微服务，日均处理请求量 1000w+。'
+    },
+    {
+      date: '2020.06 — 2021.06',
+      role: '初级前端开发',
+      org: '某创业团队',
+      desc: '参与电商小程序与后台管理系统的开发，独立完成订单管理与数据看板模块。'
+    }
+  ],
+  education: [
+    {
+      date: '2016.09 — 2020.06',
+      role: '计算机科学与技术 · 本科',
+      org: '某某大学',
+      desc: 'GPA 3.8 / 4.0，校级优秀毕业生，获 ACM 区域赛银牌。'
+    }
+  ]
+};
+
+/* ============================================
+   Render Engine
+   ============================================ */
+
+// 渲染技能标签
+(function renderSkills() {
+  const el = document.getElementById('skillTags');
+  el.innerHTML = resume.skills
+    .map(s => `<span class="skill-tag">${s}</span>`)
+    .join('');
+})();
+
+// 渲染时间线
+(function renderTimelines() {
+  const tpl = items => items.map(i => /* html */`
+    <div class="timeline-item">
+      <div class="timeline-date">${i.date}</div>
+      <div class="timeline-role">${i.role}</div>
+      <div class="timeline-org">${i.org}</div>
+      <div class="timeline-desc">${i.desc}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('experience').innerHTML = tpl(resume.experience);
+  document.getElementById('education').innerHTML = tpl(resume.education);
+})();
+
+/* ============================================
+   Scroll-triggered fade-in (IntersectionObserver)
+   ============================================ */
+(function observeSections() {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.section').forEach(s => observer.observe(s));
+})();
+
+/* ============================================
+   Particle animation (Canvas)
+   ============================================ */
+(function initParticles() {
+  const cvs = document.getElementById('particles');
+  const ctx = cvs.getContext('2d');
+  let dots = [];
+  const COUNT = 50;
+  const R = 1.5;
+
+  function resize() {
+    cvs.width = window.innerWidth;
+    cvs.height = window.innerHeight;
+  }
+
+  function seed() {
+    dots = Array.from({ length: COUNT }, () => ({
+      x: Math.random() * cvs.width,
+      y: Math.random() * cvs.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4
+    }));
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, cvs.width, cvs.height);
+    dots.forEach((d, i) => {
+      // move
+      d.x += d.vx;
+      d.y += d.vy;
+      if (d.x < 0) d.x = cvs.width;
+      if (d.x > cvs.width) d.x = 0;
+      if (d.y < 0) d.y = cvs.height;
+      if (d.y > cvs.height) d.y = 0;
+
+      // draw dot
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, R, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(57, 255, 232, 0.18)';
+      ctx.fill();
+
+      // draw lines to near neighbors
+      for (let j = i + 1; j < dots.length; j++) {
+        const dx = d.x - dots[j].x;
+        const dy = d.y - dots[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 100) {
+          ctx.beginPath();
+          ctx.moveTo(d.x, d.y);
+          ctx.lineTo(dots[j].x, dots[j].y);
+          ctx.strokeStyle = `rgba(57, 255, 232, ${0.06 * (1 - dist / 100)})`;
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+        }
+      }
+    });
+    requestAnimationFrame(draw);
+  }
+
+  resize(); seed(); draw();
+  window.addEventListener('resize', () => { resize(); seed(); });
+})();
+</script>
+
+</body>
+</html>
