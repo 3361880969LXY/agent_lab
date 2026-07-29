@@ -94,7 +94,7 @@ git rebase origin/main      # 把自己的 commit 接在最新后面（推荐）
 ## 5. 当前配置
 
 ```
-远程仓库: https://github.com/3361880969LXY/hello-agents
+远程仓库: https://github.com/3361880969LXY/agent_lab
 SSL 后端: openssl（schannel 与代理不兼容）
 代理:     127.0.0.1:7897
 认证:     HTTPS + Personal Access Token
