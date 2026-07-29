@@ -174,3 +174,6 @@ git pull origin main
 
 - 如果 token 不慎泄露，立刻去 GitHub 撤销旧 token、生成新的。
 - `.gitignore` 中排除敏感文件（`.env`、token 文件等）。
+
+
+操作总结：在仓库根目录 touch .gitignore 填入规则即可，Git 会自动生效。后续想提交时执行 git add .gitignore package.json package-lock.json && git commit -m "..." 就行。
